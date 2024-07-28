@@ -25,6 +25,8 @@ class User(Base):
 
 class Profile(Base):
     __tablename__ = 'profiles'
+
+    id = Column(Integer, autoincrement=True, primary_key=True, index=True)
     gender = Column(Enum(GenderEnum), default=GenderEnum.MALE)
     age = Column(Integer)
     weight = Column(Integer)

@@ -10,7 +10,9 @@ class Settings(BaseSettings):
     ITEMS_PER_USER: int
     SECRET_SALT: str
     ALGORITHM: str
-    TOKEN_EXP: int
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    REFRESH_SECRET_SALT: str
+    REFRESH_TOKEN_EXP_MINUTES: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

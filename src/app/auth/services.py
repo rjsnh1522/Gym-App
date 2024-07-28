@@ -1,29 +1,37 @@
-from fastapi import Depends, status,HTTPException
-from fastapi.security import OAuth2PasswordBearer
-from sqlalchemy.orm import Session
-
-from src.app.auth.models import User
-from passlib.context import CryptContext
-from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
+from passlib.context import CryptContext
+
+from src.app.auth.models import User
 from src.config import get_settings
-from src.utils.database import get_db
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl="v1/auth/token")
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl="v1/auth/login", scheme_name="JWT")
 
 settings = get_settings()
-secret_salt = settings.secret_salt
+secret_salt = settings.SECRET_SALT
 algo = settings.ALGORITHM
-token_expiry = settings.TOKEN_EXP
+access_token_expiry_minutes = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+refresh_token_expiry_minutes = settings.REFRESH_TOKEN_EXP_MINUTES
+refresh_token_salt = settings.REFRESH_SECRET_SALT
 
 
 async def create_access_token(user):
-    encode = {'email': user.email, 'id': user.id}
-    expires = datetime.utcnow() + timedelta(seconds=int(token_expiry))
-    encode.update({'expires': expires})
+
+    expires = datetime.utcnow() + timedelta(minutes=int(access_token_expiry_minutes))
+    encode = {'email': user.email, 'id': user.id, 'expires': expires}
     return jwt.encode(encode, secret_salt, algorithm=algo)
+
+
+async def create_refresh_token(user) -> str:
+
+    expires_delta = datetime.utcnow() + timedelta(minutes=refresh_token_expiry_minutes)
+
+    to_encode = {'email': user.email, 'id': user.id, 'expires': expires_delta}
+    encoded_jwt = jwt.encode(to_encode, refresh_token_salt, algo)
+    return encoded_jwt
 
 
 async def user_already_exists(db, user):
@@ -31,47 +39,11 @@ async def user_already_exists(db, user):
     return db_user
 
 
-async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_bearer)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, secret_salt, algorithms=[algo])
-        username: str = payload.get("email")
-        id: str = payload.get("id")
-        exp: datetime = payload.get("expires")
-        if datetime.fromtimestamp(exp) < datetime.now():
-            raise credentials_exception
-        if username is None or id is None:
-            raise credentials_exception
-        user = db.query(User).filter(User.id == id).first()
-        if not user:
-            raise credentials_exception
-        return user
-    except JWTError as e:
-        print(f"Error in {e}")
-        raise credentials_exception
-
-
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
-    if not current_user.is_active:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
-    return current_user
-
-
 async def create_user(db, user):
     db_user = User(
         email=user.email.lower().strip(),
-        username=user.username.lower().strip(),
+        name=user.name.lower().strip(),
         hashed_password=bcrypt_context.hash(user.password),
-        dob=user.dob,
-        gender=user.gender,
-        bio=user.bio,
-        location=user.bio,
-        name=user.name,
-        profile_pic=user.profile_pic
     )
     db.add(db_user)
     db.commit()
