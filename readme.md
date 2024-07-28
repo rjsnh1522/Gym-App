@@ -54,7 +54,7 @@ Musthave
 ##### Goal ENUM
 * [gain weight, Lose weight, get Fitter, Gain More flexibility, Lean basics]
 
-##### Workout Categories ENUM
+##### WorkoutLevelEnum
 * [Rookie, Beginner, Intermediate, Advance, True Beast]
 
 ##### Exercise Category
@@ -72,6 +72,15 @@ Reps & Time, Weight, Reps, Distance, Time]
 * is_active
 * created_at
 * updated_at
+
+#### Verification
+* user_id
+* type
+* verification_code
+* end_date
+* created_at
+* updated_at
+* verified_on
 
 #### Profile Model
 * gender
@@ -93,19 +102,19 @@ Reps & Time, Weight, Reps, Distance, Time]
 * Calories Burn
 
 #### Workouts
-1. Exercises name
-2. Target muscle
-3. Time
-4. workout_plan_id [one to many, workout plan can have many workouts]
+* Exercises name 
+* Target muscle 
+* Time 
+* workout_plan_id [one to many, workout plan can have many workouts]
 
 #### Exercises
-user_id
-exercise_category
-name
-notes
-exercise type
-weight unit
-is_default
+* user_id 
+* exercise_category 
+* name 
+* notes 
+* exercise type 
+* weight unit 
+* is_default
 
 
 
