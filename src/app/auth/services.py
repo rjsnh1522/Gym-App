@@ -3,8 +3,10 @@ from datetime import datetime, timedelta
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
-from src.app.auth.models import User
+from src.app.auth.models import User, Profile
+from src.app.auth.schemas import ProfileBase, UserCreate
 from src.config import get_settings
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -39,7 +41,7 @@ async def user_already_exists(db, user):
     return db_user
 
 
-async def create_user(db, user):
+async def create_user(db: Session, user: UserCreate):
     db_user = User(
         email=user.email.lower().strip(),
         name=user.name.lower().strip(),
@@ -47,8 +49,24 @@ async def create_user(db, user):
     )
     db.add(db_user)
     db.commit()
+    db.refresh(db_user)
     return db_user
 
+
+async def create_user_profile(db: Session, profile: ProfileBase, user: UserCreate):
+    db_profile = Profile(
+        gender=profile.gender,
+        age=profile.age,
+        weight=profile.weight,
+        height=profile.height,
+        goal=profile.goal,
+        physical_activity_level=profile.physical_activity_level,
+        user_id=user.id
+    )
+    db.add(db_profile)
+    db.commit()
+    db.refresh(db_profile)
+    return db_profile
 
 async def get_hashed_password(password: str):
     return bcrypt_context.hash(password)

@@ -9,15 +9,17 @@ DB_URL = settings.DB_URL
 
 engine = create_engine(DB_URL, pool_pre_ping=True)
 
-session_local = sessionmaker(bind=engine, autoflush=False)
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()
 
 
 def get_db():
-    db = session_local()
+    db = SessionLocal()
     try:
         yield db
     except Exception as e:
-        print(e)
+        print(f"Error in get DB, {e}")
+    finally:
+        db.close()
 
 

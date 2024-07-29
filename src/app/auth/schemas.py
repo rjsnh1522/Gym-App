@@ -1,10 +1,11 @@
 from datetime import datetime
-
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, EmailStr
+from src.utils.enums import GenderEnum, GoalEnum, PhysicalLevelEnum
 
 
 class UserBase(BaseModel):
-    email: str
+    email: EmailStr
     name: str
 
 
@@ -15,3 +16,18 @@ class UserCreate(UserBase):
 class UserOut(UserBase):
     id: int
     created_at: datetime
+
+
+class ProfileBase(BaseModel):
+    gender: Optional[GenderEnum]
+    age: Optional[int]
+    weight: Optional[int]
+    height: Optional[int]
+    goal: Optional[GoalEnum]
+    physical_activity_level: Optional[PhysicalLevelEnum]
+
+
+class UserSignup(BaseModel):
+    user: UserCreate
+    profile: ProfileBase
+

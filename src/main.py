@@ -2,6 +2,9 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from src.utils.database import get_db, Base, engine
 from src.routes import routers
+
+# Base.metadata.drop_all(bind=engine)
+
 Base.metadata.create_all(bind=engine)
 
 
