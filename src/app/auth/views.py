@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from src.app.auth.models import User
 from src.app.auth.schemas import UserCreate, UserOut, UserSignup
 from src.app.auth.services import user_already_exists, create_user, create_user_profile, authentication, \
-    create_access_token, create_refresh_token
+    create_access_token, create_refresh_token, send_verification_email
 from src.utils.database import get_db
 from src.utils.dependencies import get_current_user
 from src.utils.email_api import send_email_async, send_email_background
@@ -14,7 +14,9 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post('/signup', status_code=status.HTTP_201_CREATED, name="signup")
-async def signup(user_signup: UserSignup, db: Session = Depends(get_db)):
+async def signup(user_signup: UserSignup,
+                 background_tasks: BackgroundTasks,
+                 db: Session = Depends(get_db)):
     db_user = await user_already_exists(user_signup.user.email, db)
     if db_user:
         return HTTPException(
@@ -23,12 +25,15 @@ async def signup(user_signup: UserSignup, db: Session = Depends(get_db)):
         )
     user = await create_user(db, user_signup.user)
     profile = await create_user_profile(db, user_signup.profile, user)
-    return {"user": user, "profile": profile}
+    background_tasks.add_task(send_verification_email, user.id, db)
+    return {"user": UserOut.from_orm(user), "profile": profile}
 
 
-@router.get('/me', summary='Get details of currently logged in user', response_model=UserOut)
+@router.get('/me', summary='Get details of currently logged in user')
 async def profile(me: User = Depends(get_current_user)):
-    return me
+    user = me
+    profile = user.profile
+    return {"user": UserOut.from_orm(user), "profile": profile}
 
 
 @router.post("/login", summary="Login user and give access token and refresh token",

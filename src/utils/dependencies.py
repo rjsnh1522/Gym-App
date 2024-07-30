@@ -27,7 +27,7 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
         username: str = payload.get("email")
         id: str = payload.get("id")
         exp: datetime = payload.get("expires")
-        if datetime.fromtimestamp(exp) < datetime.now():
+        if datetime.strptime(exp, '%Y-%m-%d %H:%M:%S.%f') < datetime.now():
             raise credentials_exception
         if username is None or id is None:
             raise credentials_exception

@@ -16,6 +16,13 @@ class UserCreate(UserBase):
 class UserOut(UserBase):
     id: int
     created_at: datetime
+    is_active: bool
+    email_verified: bool
+
+    class Config:
+        orm_mode = True
+        from_attributes = True
+
 
 class UserLogin(BaseModel):
     email:EmailStr

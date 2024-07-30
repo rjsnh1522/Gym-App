@@ -12,7 +12,9 @@ class Settings(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_SECRET_SALT: str
-    REFRESH_TOKEN_EXP_MINUTES: str
+    REFRESH_TOKEN_EXP_MINUTES: int
+    BASE_URL: str
+    ENABLE_EMAIL: bool
 
     MAIL_USERNAME: str
     MAIL_PASSWORD: str
