@@ -14,6 +14,15 @@ class Settings(BaseSettings):
     REFRESH_SECRET_SALT: str
     REFRESH_TOKEN_EXP_MINUTES: str
 
+    MAIL_USERNAME: str
+    MAIL_PASSWORD: str
+    MAIL_FROM: str
+    MAIL_PORT: str
+    MAIL_SERVER: str
+    MAIL_FROM_NAME: str
+    MAIL_STARTTLS: str
+    TEMPLATE_FOLDER: str
+
     model_config = SettingsConfigDict(env_file=".env")
 
 

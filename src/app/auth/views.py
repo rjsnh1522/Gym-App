@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,7 @@ from src.app.auth.services import user_already_exists, create_user, create_user_
     create_access_token, create_refresh_token
 from src.utils.database import get_db
 from src.utils.dependencies import get_current_user
+from src.utils.email_api import send_email_async, send_email_background
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -44,3 +45,21 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
     return {"access_token": access_token, "refresh_token": refresh_token}
 
+
+@router.get('/send-email/asynchronous')
+async def send_email_asynchronous():
+    await send_email_async(
+        subject='Hello World',
+        email_to='test@gmail.com',
+        body={'title': 'Hello World', 'name': 'John Doe'})
+    return 'Success'
+
+
+@router.get('/send-email/backgroundtasks')
+def send_email_background_tasks(background_tasks: BackgroundTasks):
+    send_email_background(
+        background_tasks, subject='Hello World',
+        email_to='test@gmail.com',
+        body={'title': 'Hello World', 'name':       'John Doe'})
+
+    return 'Success'

@@ -65,7 +65,7 @@ Musthave
 Reps & Time, Weight, Reps, Distance, Time]
 
 
-#### User Model
+#### User Model 
 * name
 * email
 * hashed_password
@@ -79,7 +79,6 @@ Reps & Time, Weight, Reps, Distance, Time]
 * verification_code
 * end_date
 * created_at
-* updated_at
 * verified_on
 
 #### Profile Model

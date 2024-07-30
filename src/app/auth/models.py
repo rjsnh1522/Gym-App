@@ -35,3 +35,14 @@ class Profile(Base):
 
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = relationship("User", back_populates="profile")
+    created_at = Column(DateTime, default=datetime.now())
+
+
+class Verification(Base):
+    __tablename__ = "verifications"
+    id = Column(Integer, autoincrement=True, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    verification_code = Column(String)
+    expiry = Column(DateTime, default=datetime.now())
+    created_at = Column(DateTime, default=datetime.now())
+    verified_on = Column(DateTime, default=datetime.now())
