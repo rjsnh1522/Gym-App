@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends, Form
+from fastapi.security import OAuth2PasswordBearer, OAuth2
 from jose import jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -8,6 +9,7 @@ from sqlalchemy.orm import Session
 from src.app.auth.models import User, Profile
 from src.app.auth.schemas import ProfileBase, UserCreate
 from src.config import get_settings
+from src.utils.database import get_db
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="v1/auth/login", scheme_name="JWT")
@@ -36,8 +38,8 @@ async def create_refresh_token(user) -> str:
     return encoded_jwt
 
 
-async def user_already_exists(db, user):
-    db_user = db.query(User).filter(User.email == user.email).first()
+async def user_already_exists(email, db: Session):
+    db_user = db.query(User).filter(User.email == email).first()
     return db_user
 
 
@@ -68,9 +70,22 @@ async def create_user_profile(db: Session, profile: ProfileBase, user: UserCreat
     db.refresh(db_profile)
     return db_profile
 
+
 async def get_hashed_password(password: str):
     return bcrypt_context.hash(password)
 
 
-def verify_password(password: str, hashed_pass: str) -> bool:
+async def verify_password(password: str, hashed_pass: str) -> bool:
     return bcrypt_context.verify(password, hashed_pass)
+
+
+async def authentication(form_data, db: Session):
+    db_user = await user_already_exists(form_data.username, db)
+    if not db_user:
+        return None, "User doesnt exists"
+    is_verified = await verify_password(form_data.password, db_user.hashed_password)
+    if not is_verified:
+        return None, "Password didn't match"
+    return db_user, "User found"
+
+

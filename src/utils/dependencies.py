@@ -38,4 +38,10 @@ async def get_current_user(db: Session = Depends(get_db), token: str = Depends(o
     except JWTError as e:
         print(f"Error in {e}")
         raise credentials_exception
+    except Exception as e:
+        print(f"Unexpected Error: {e}")  # Log unexpected errors
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred. Please try again later."
+        )
 
