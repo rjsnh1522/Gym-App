@@ -45,3 +45,14 @@ class ExerciseTypeEnum(Enum):
     DISTANCE = "Distance"
     TIME = "Time"
 
+
+class ProfileType(Enum):
+    COACH = "Coach"
+    TRAINEE = "Trainee"
+
+
+class WorkoutPlanType(Enum):
+    DEFAULT = "Default"
+    CUSTOM = "Custom"
+
+

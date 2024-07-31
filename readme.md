@@ -54,7 +54,7 @@ Musthave
 ##### Goal ENUM
 * [gain weight, Lose weight, get Fitter, Gain More flexibility, Lean basics]
 
-##### WorkoutLevelEnum
+##### PhysicalLevelEnum
 * [Rookie, Beginner, Intermediate, Advance, True Beast]
 
 ##### Exercise Category
@@ -64,8 +64,11 @@ Musthave
 * [Weight & Reps, Distance & Time, Weight & Distance, Weight & time, Reps & Distance, 
 Reps & Time, Weight, Reps, Distance, Time]
 
+##### Training Split
+* [Total Body Split, Upper vs. Lower Split, Push Pull Legs Split, Bro Split]
 
-#### User Model 
+
+#### User Model  [Done]
 * name
 * email
 * hashed_password
@@ -73,7 +76,7 @@ Reps & Time, Weight, Reps, Distance, Time]
 * created_at
 * updated_at
 
-#### Verification
+#### Verification  [Done]
 * user_id
 * type
 * verification_code
@@ -81,7 +84,7 @@ Reps & Time, Weight, Reps, Distance, Time]
 * created_at
 * verified_on
 
-#### Profile Model
+#### Profile Model  [Done]
 * gender
 * age
 * weight
@@ -92,19 +95,29 @@ Reps & Time, Weight, Reps, Distance, Time]
 * ProfileType [Coach, Trainee]
 
 
+##### Coach
+* gender
+* 
+
+
+
 #### Workout Plan:
 * workout title
-* Workout category 
+* exercise_exp_level
 * Total workouts
-* Workouts [list]
 * Description
 * Calories Burn
+* created_at
 
 #### Workouts
 * Exercises name 
 * Target muscle 
-* Time 
-* workout_plan_id [one to many, workout plan can have many workouts]
+* Time
+
+# Plan workouts [many to many relationship]
+plan_id
+workout_id
+
 
 #### Exercises
 * user_id 

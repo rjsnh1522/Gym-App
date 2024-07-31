@@ -4,7 +4,7 @@ from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, E
 from sqlalchemy.orm import relationship
 
 from src.utils.database import Base
-from src.utils.enums import GenderEnum, GoalEnum, PhysicalLevelEnum
+from src.utils.enums import GenderEnum, GoalEnum, PhysicalLevelEnum, ProfileType
 
 
 class User(Base):
@@ -31,10 +31,16 @@ class Profile(Base):
     weight = Column(Integer)
     height = Column(Integer)
     goal = Column(Enum(GoalEnum), nullable=False)
-    physical_activity_level = Column(Enum(PhysicalLevelEnum), nullable=False)
+    physical_activity_level = Column(Enum(PhysicalLevelEnum), nullable=False, default=PhysicalLevelEnum.BEGINNER)
+    profile_type = Column(Enum(ProfileType), default=ProfileType.TRAINEE)
 
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+
     user = relationship("User", back_populates="profile")
+    workout_plans = relationship("WorkoutPlan", back_populates="user")
+    coach = relationship("Coach", back_populates="user")
+
+
     created_at = Column(DateTime, default=datetime.now())
 
 
@@ -46,3 +52,24 @@ class Verification(Base):
     expiry = Column(DateTime, default=datetime.now())
     created_at = Column(DateTime, default=datetime.now())
     verified_on = Column(DateTime, default=datetime.now())
+
+
+class Coach(Base):
+    __tablename__ = "coaches"
+
+    id = Column(Integer, autoincrement=True, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user = relationship("User", back_populates="coach")
+    review = relationship("Review", back_populates="coach")
+    experience = Column(Integer)
+
+
+class Review(Base):
+    __tablename__ = "reviews"
+
+    id = Column(Integer, autoincrement=True, primary_key=True, index=True)
+    coach_id = Column(Integer, ForeignKey("coaches.id", ondelete="CASCADE"), nullable=False)
+    coach = relationship("Coach", back_populates="review")
+    rating = Column(Integer)
+    reviewer = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    description = Column(String)
