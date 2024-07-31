@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, select
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from src.utils.database import Base
@@ -15,11 +16,13 @@ class User(Base):
     name = Column(String, nullable=False)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=False)
+    is_coach = Column(Boolean, default=False)
     email_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now())
 
     #relationship
     profile = relationship("Profile", back_populates="user", cascade="all, delete-orphan")
+    coach = relationship("Coach", back_populates="user", uselist=False)
 
 
 class Profile(Base):
@@ -38,8 +41,6 @@ class Profile(Base):
 
     user = relationship("User", back_populates="profile")
     workout_plans = relationship("WorkoutPlan", back_populates="user")
-    coach = relationship("Coach", back_populates="user")
-
 
     created_at = Column(DateTime, default=datetime.now())
 

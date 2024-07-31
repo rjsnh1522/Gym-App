@@ -114,10 +114,6 @@ Reps & Time, Weight, Reps, Distance, Time]
 * Target muscle 
 * Time
 
-# Plan workouts [many to many relationship]
-plan_id
-workout_id
-
 
 #### Exercises
 * user_id 
