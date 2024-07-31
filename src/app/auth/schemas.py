@@ -25,8 +25,9 @@ class UserOut(UserBase):
 
 
 class UserLogin(BaseModel):
-    email:EmailStr
+    email: EmailStr
     password: str
+
 
 class ProfileBase(BaseModel):
     gender: Optional[GenderEnum]

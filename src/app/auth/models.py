@@ -62,6 +62,7 @@ class Coach(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     user = relationship("User", back_populates="coach")
     review = relationship("Review", back_populates="coach")
+    workout_plans = relationship("WorkoutPlan", back_populates="coach")
     experience = Column(Integer)
 
 

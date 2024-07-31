@@ -30,8 +30,8 @@ async def signup(user_signup: UserSignup,
 
 
 @router.get('/me', summary='Get details of currently logged in user')
-async def profile(me: User = Depends(get_current_user)):
-    user = me
+async def profile(current_user: User = Depends(get_current_user)):
+    user = current_user
     profile = user.profile
     return {"user": UserOut.from_orm(user), "profile": profile}
 
@@ -52,7 +52,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = 
 
 
 @router.get('/send-email/asynchronous')
-async def send_email_asynchronous():
+async def send_email_asynchronous(current_user: User = Depends(get_current_user)):
     await send_email_async(
         subject='Hello World',
         email_to='test@gmail.com',
@@ -61,7 +61,7 @@ async def send_email_asynchronous():
 
 
 @router.get('/send-email/backgroundtasks')
-def send_email_background_tasks(background_tasks: BackgroundTasks):
+def send_email_background_tasks(background_tasks: BackgroundTasks, current_user: User = Depends(get_current_user)):
     send_email_background(
         background_tasks, subject='Hello World',
         email_to='test@gmail.com',

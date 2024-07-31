@@ -18,11 +18,11 @@ class WorkoutPlan(Base):
     plan_type = Column(Enum(WorkoutPlanType), nullable=False, default=WorkoutPlanType.DEFAULT)
     total_workout_count = Column(Integer)
     total_time = Column(Integer)
-    Description = Column(LONGTEXT, default=False)
+    description = Column(String, default=False)
     calories_burn = Column(Integer)
 
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    user = relationship("User", back_populates="workout_plans")
+    coach_id = Column(Integer, ForeignKey("coaches.id"), nullable=True)
+    coach = relationship("Coach", back_populates="workout_plans")
 
     created_at = Column(DateTime, default=datetime.now())
 
@@ -38,11 +38,15 @@ class WorkoutPlan(Base):
 
 
 class Workouts(Base):
+
     __tablename__ = "workouts"
+
     id = Column(Integer, autoincrement=True, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     target_muscle = Column(Enum(ExerciseCategoryEnum), nullable=False)
     total_time = Column(Integer)
-    Description = Column(LONGTEXT, default=False)
+    description = Column(String, default=False)
     calories_burn = Column(Integer)
+
+    workout_plan = Column(Integer, ForeignKey("workoutplans.id", ondelete="CASCADE"), nullable=False)
 
