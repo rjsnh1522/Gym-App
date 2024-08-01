@@ -40,7 +40,6 @@ class Profile(Base):
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
 
     user = relationship("User", back_populates="profile")
-    workout_plans = relationship("WorkoutPlan", back_populates="user")
 
     created_at = Column(DateTime, default=datetime.now())
 
@@ -64,6 +63,7 @@ class Coach(Base):
     review = relationship("Review", back_populates="coach")
     workout_plans = relationship("WorkoutPlan", back_populates="coach")
     experience = Column(Integer)
+    is_active = Column(Boolean, default=True)
 
 
 class Review(Base):

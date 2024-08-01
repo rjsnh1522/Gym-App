@@ -9,7 +9,7 @@ class WorkoutPlanBase(BaseModel):
     workout_title: str
     sub_heading: str
     exercise_exp_level: PhysicalLevelEnum
-    plan_type: WorkoutPlanType
+    plan_type: Optional[WorkoutPlanType] = None
     total_workout_count: int
     total_time: int
     description: str

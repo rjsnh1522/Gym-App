@@ -1,17 +1,15 @@
 import uuid
 from datetime import datetime, timedelta
 
-from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from fastapi_mail import MessageSchema, FastMail
 from jose import jwt
 from passlib.context import CryptContext
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
-from src.app.auth.models import User, Profile, Verification
-from src.app.auth.schemas import ProfileBase, UserCreate
+from src.app.auth.models import User, Profile, Verification, Coach
+from src.app.auth.schemas import ProfileBase, UserCreate, CoachBase
 from src.config import get_settings
-from src.utils.database import get_db
 from src.utils.email_api import conf
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -120,3 +118,37 @@ async def send_verification_email(user_id: int, db):
             await fm.send_message(message)
     else:
         print(f"User not found with user_id {user_id}")
+
+
+async def create_coach_data(db: Session, coach: CoachBase):
+    db_coach = Coach(
+        user_id=coach.user_id,
+        experience=coach.experience,
+        is_active=True
+    )
+    db.add(db_coach)
+    db.commit()
+    db.refresh(db_coach)
+    return db_coach
+
+
+async def get_coach_data(db: Session, coach_id: int = None, user_id: int = None):
+    coach = None
+    if coach_id:
+        coach = db.query(Coach).options(
+            joinedload(Coach.user).joinedload(User.profile)).filter(Coach.id == coach_id).first()
+    elif user_id:
+        coach = db.query(Coach).options(
+            joinedload(Coach.user).joinedload(User.profile)).filter(Coach.user_id == user_id).first()
+    else:
+        return None
+
+    if not coach:
+        return None
+
+    return {
+        "id": coach.id,
+        "experience": coach.experience,
+        "user": coach.user
+    }
+
