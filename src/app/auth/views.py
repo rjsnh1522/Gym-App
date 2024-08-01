@@ -3,8 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from src.app.auth.models import User
-from src.app.auth.schemas import UserOut, UserSignup, CoachBase, CoachOut
-
+from src.app.auth.schemas import UserOut, UserSignup, CoachBase
 from src.app.auth.services import (user_already_exists,
                                    create_user,
                                    create_user_profile,
@@ -15,7 +14,6 @@ from src.app.auth.services import (user_already_exists,
                                    create_coach_data,
                                    get_coach_data)
 from src.app.auth.tasks import update_profile_task
-
 from src.utils.database import get_db
 from src.utils.dependencies import get_current_user
 from src.utils.email_api import send_email_async, send_email_background
@@ -88,11 +86,11 @@ async def create_coach(coach: CoachBase,
     db_coach = await get_coach_data(db, user_id=coach.user_id)
     if not db_coach:
         db_coach = await create_coach_data(db, coach)
-    background_tasks.add_task(update_profile_task, db, db_coach.user_id, True)
+    background_tasks.add_task(update_profile_task, db, coach.user_id, True)
     return db_coach
 
 
-@router.get('/coach/{coach_id}', status_code=status.HTTP_201_CREATED, response_model=CoachOut)
+@router.get('/coach/{coach_id}', status_code=status.HTTP_201_CREATED)
 async def create_coach(coach_id: int,
                        db: Session = Depends(get_db),
                        current_user: User = Depends(get_current_user)):

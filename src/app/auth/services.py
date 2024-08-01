@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session, joinedload
 
 from src.app.auth.models import User, Profile, Verification, Coach
-from src.app.auth.schemas import ProfileBase, UserCreate, CoachBase
+from src.app.auth.schemas import ProfileBase, UserCreate, CoachBase, UserOut, CoachOut
 from src.config import get_settings
 from src.utils.email_api import conf
 
@@ -147,8 +147,8 @@ async def get_coach_data(db: Session, coach_id: int = None, user_id: int = None)
         return None
 
     return {
-        "id": coach.id,
-        "experience": coach.experience,
-        "user": coach.user
+        "coach": CoachOut.from_orm(coach),
+        "user": UserOut.from_orm(coach.user),
+        "profile": coach.user.profile
     }
 

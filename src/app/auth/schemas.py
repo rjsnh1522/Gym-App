@@ -58,5 +58,7 @@ class CoachBase(BaseModel):
 class CoachOut(BaseModel):
     id: int
     experience: int
-    user: UserOut
-    profile: Optional[ProfileBase]
+    is_active: Optional[bool] = None
+    class Config:
+        orm_mode = True
+        from_attributes = True
