@@ -9,6 +9,8 @@ from sqlalchemy.orm import Session, joinedload
 
 from src.app.auth.models import User, Profile, Verification, Coach
 from src.app.auth.schemas import ProfileBase, UserCreate, CoachBase, UserOut, CoachOut
+from src.app.workout.models import Workouts
+from src.app.workout.schemas import WorkoutBase
 from src.config import get_settings
 from src.utils.email_api import conf
 
@@ -152,3 +154,26 @@ async def get_coach_data(db: Session, coach_id: int = None, user_id: int = None)
         "profile": coach.user.profile
     }
 
+async def save_workouts(db: Session, workout: WorkoutBase):
+    try:
+        db_workout = Workouts(
+            name=workout.name,
+            target_muscle=workout.target_muscle,
+            total_time=workout.total_time,
+            description=workout.description,
+            calories_burn=workout.calories_burn,
+            workout_plan_id=workout.workout_plan_id,
+        )
+        db.add(db_workout)
+        db.commit()
+        db.refresh(db_workout)
+        return db_workout
+    except Exception as e:
+        print(f"Error in save workout Error, {e}")
+        return None
+
+async def get_workout_by_id(db: Session, workout_id:int):
+    db_workout = db.query(Workouts).filter(Workouts.id == workout_id).first()
+    if not db_workout:
+        return None, "Workout doesn't exists "
+    return db_workout, "found"

@@ -113,6 +113,7 @@ Reps & Time, Weight, Reps, Distance, Time]
 * Exercises name 
 * Target muscle 
 * Time
+* workout_plan_id
 
 
 #### Exercises

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey, Boolean
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import validates, relationship
 
@@ -42,11 +42,12 @@ class Workouts(Base):
     __tablename__ = "workouts"
 
     id = Column(Integer, autoincrement=True, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True, nullable=False)
+    name = Column(String, nullable=False)
     target_muscle = Column(Enum(ExerciseCategoryEnum), nullable=False)
     total_time = Column(Integer)
     description = Column(String, default=False)
     calories_burn = Column(Integer)
+    is_active = Column(Boolean, default=True)
 
-    workout_plan = Column(Integer, ForeignKey("workoutplans.id", ondelete="CASCADE"), nullable=False)
+    workout_plan_id = Column(Integer, ForeignKey("workoutplans.id", ondelete="CASCADE"), nullable=False)
 

@@ -22,7 +22,7 @@ class UserOut(UserBase):
     email_verified: bool
 
     class Config:
-        orm_mode = True
+        # orm_mode = True
         from_attributes = True
 
 
@@ -51,7 +51,7 @@ class CoachBase(BaseModel):
     user_id: int
 
     class Config:
-        orm_mode = True
+        # orm_mode = True
         from_attributes = True
 
 
@@ -60,5 +60,5 @@ class CoachOut(BaseModel):
     experience: int
     is_active: Optional[bool] = None
     class Config:
-        orm_mode = True
+        # orm_mode = True
         from_attributes = True

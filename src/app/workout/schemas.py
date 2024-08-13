@@ -23,7 +23,17 @@ class WorkoutBase(BaseModel):
     total_time: int
     description: str
     calories_burn: int
+    workout_plan_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+
+class WorkoutUpdate(BaseModel):
+    name: Optional[str] = None
+    target_muscle: Optional[ExerciseCategoryEnum] = None
+    total_time: Optional[int] = None
+    description: Optional[str] = None
+    calories_burn: Optional[int] = None
+    is_active: Optional[bool] = None
+    workout_plan_id: Optional[int] = None
